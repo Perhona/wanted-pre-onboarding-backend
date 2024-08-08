@@ -37,7 +37,8 @@ public class JobPostingAcceptanceTest {
                 .extract();
         long id = response.jsonPath().getLong("id");
 
-        RestAssured.given()
+        RestAssured
+                .given()
                 .when()
                 .get("/jobPostings/" + id)
                 .then()

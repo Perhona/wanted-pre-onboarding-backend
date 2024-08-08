@@ -25,6 +25,7 @@ public class JobPosting {
     @Getter
     @Column(name = "job_description")
     private String jobDescription;
+    @Getter
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
