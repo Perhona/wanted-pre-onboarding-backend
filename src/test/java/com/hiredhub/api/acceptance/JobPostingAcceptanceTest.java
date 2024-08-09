@@ -70,14 +70,15 @@ public class JobPostingAcceptanceTest {
     }
 
     /**
-     * given 채용 공고를 등록하고
+     * given 채용 공고를 2개 등록하고
      * when 채용 공고 상세를 조회하면
-     * then 생성한 채용 공고의 정보를 응답받을 수 있다.
+     * then 생성한 채용 공고의 id, 공고 내용, 다른 채용 공고를 응답 받을 수 있다.
      */
     @DisplayName("채용 공고 상세 조회")
     @Test
     void getJobPosting() {
         Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
@@ -88,5 +89,7 @@ public class JobPostingAcceptanceTest {
                 .extract();
 
         assertThat(response.jsonPath().getLong("id")).isEqualTo(jobPostingId);
+        assertThat(response.jsonPath().getString("jobDescription")).isEqualTo("test");
+        assertThat(response.jsonPath().getList("companyOtherJobPostingIds", Long.class)).hasSize(1);
     }
 }
