@@ -36,4 +36,10 @@ public class JobPostingService {
     public List<JobPostingResponse> listAllJobPostings() {
         return jobPostingRepository.findAll().stream().map(this::createJobPostingResponse).toList();
     }
+
+    public JobPostingResponse.JobPostingDetailResponse getJobPosting(Long id) {
+        JobPosting jobPosting = jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND));
+        Company company = jobPosting.getCompany();
+        return new JobPostingResponse.JobPostingDetailResponse(jobPosting.getId(), jobPosting.getCompany().getName(), jobPosting.getPosition(), jobPosting.getCountry(), jobPosting.getRegion(), jobPosting.getReward(), jobPosting.getTechStack(), jobPosting.getJobDescription(), company.getOtherJobPostingIds(jobPosting.getId()));
+    }
 }

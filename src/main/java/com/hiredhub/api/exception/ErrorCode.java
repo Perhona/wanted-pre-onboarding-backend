@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
-    COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "Company not found"),;
+    COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "Company not found"),
+    JOB_POSTING_NOT_FOUND(HttpStatus.BAD_REQUEST, "Job posting not found");
 
     private final HttpStatus httpStatus;
     private final String message;
