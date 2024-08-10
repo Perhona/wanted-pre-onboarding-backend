@@ -35,4 +35,10 @@ public class JobPostingController {
     public ResponseEntity<JobPostingResponse.DetailResponse> updateJobPosting(@PathVariable Long id, @RequestBody JobPostingRequest.UpdateRequest jobPostingUpdateRequest) {
         return ResponseEntity.ok().body(jobPostingService.updateJobPosting(id, jobPostingUpdateRequest));
     }
+
+    @DeleteMapping("/jobPostings/{id}")
+    public ResponseEntity<Void> deleteJobPosting(@PathVariable Long id) {
+        jobPostingService.deleteJobPosting(id);
+        return ResponseEntity.noContent().build();
+    }
 }

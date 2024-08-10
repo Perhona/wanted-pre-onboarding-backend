@@ -59,4 +59,10 @@ public class JobPostingService {
 
         return createJobPostingDetailResponse(jobPosting);
     }
+
+    @Transactional
+    public void deleteJobPosting(Long id) {
+        JobPosting jobPosting = jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND));
+        jobPostingRepository.delete(jobPosting);
+    }
 }
