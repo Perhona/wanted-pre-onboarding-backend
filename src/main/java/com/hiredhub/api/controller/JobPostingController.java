@@ -16,18 +16,18 @@ public class JobPostingController {
     private final JobPostingService jobPostingService;
 
     @GetMapping("/jobPostings")
-    public ResponseEntity<List<JobPostingResponse>> listJobPostings() {
+    public ResponseEntity<List<JobPostingResponse.ListResponse>> listJobPostings() {
         return ResponseEntity.ok().body(jobPostingService.listAllJobPostings());
     }
 
     @GetMapping("/jobPostings/{id}")
-    public ResponseEntity<JobPostingResponse.JobPostingDetailResponse> getJobPosting(@PathVariable Long id) {
+    public ResponseEntity<JobPostingResponse.DetailResponse> getJobPosting(@PathVariable Long id) {
         return ResponseEntity.ok().body(jobPostingService.getJobPosting(id));
     }
 
     @PostMapping("/jobPostings")
-    public ResponseEntity<JobPostingResponse> createJobPosting(@RequestBody JobPostingRequest jobPostingRequest) {
-        JobPostingResponse jobPostingResponse = jobPostingService.createJobPosting(jobPostingRequest);
-        return ResponseEntity.created(URI.create("/jobPostings/" + jobPostingResponse.getId())).body(jobPostingResponse);
+    public ResponseEntity<JobPostingResponse.DetailResponse> createJobPosting(@RequestBody JobPostingRequest jobPostingRequest) {
+        JobPostingResponse.DetailResponse jobPostingDetailResponse = jobPostingService.createJobPosting(jobPostingRequest);
+        return ResponseEntity.created(URI.create("/jobPostings/" + jobPostingDetailResponse.id())).body(jobPostingDetailResponse);
     }
 }
