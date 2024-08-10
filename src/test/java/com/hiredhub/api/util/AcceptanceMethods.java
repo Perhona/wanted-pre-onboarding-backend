@@ -1,4 +1,4 @@
-package com.hiredhub.api.acceptance;
+package com.hiredhub.api.util;
 
 import com.hiredhub.api.dto.JobPostingRequest;
 import io.restassured.RestAssured;

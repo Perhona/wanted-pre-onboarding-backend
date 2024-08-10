@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import static com.hiredhub.api.acceptance.AcceptanceMethods.makeJobPosting;
+import static com.hiredhub.api.util.AcceptanceMethods.makeJobPosting;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(value = "/table_truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -91,5 +91,32 @@ public class JobPostingAcceptanceTest {
         assertThat(response.jsonPath().getLong("id")).isEqualTo(jobPostingId);
         assertThat(response.jsonPath().getString("jobDescription")).isEqualTo("test");
         assertThat(response.jsonPath().getList("companyOtherJobPostingIds", Long.class)).hasSize(1);
+    }
+
+    /**
+     * given 채용 공고를 1개 등록하고
+     * when 채용 공고를 수정하면
+     * then 수정된 내용을 확인할 수 있다.
+     */
+    @DisplayName("채용 공고 수정")
+    @Test
+    void updateJobPosting() {
+        Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .body(new JobPostingRequest.UpdateRequest(jobPostingId, "프론트엔드 개발자", 10_000_000, "JavaScript", "자바 스크립트 프론트엔드 개발자를 모집합니다."))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/jobPostings/" + jobPostingId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        assertThat(response.jsonPath().getLong("id")).isEqualTo(jobPostingId);
+        assertThat(response.jsonPath().getString("position")).isEqualTo("프론트엔드 개발자");
+        assertThat(response.jsonPath().getInt("reward")).isEqualTo(10_000_000);
+        assertThat(response.jsonPath().getString("techStack")).isEqualTo("JavaScript");
+        assertThat(response.jsonPath().getString("jobDescription")).isEqualTo("자바 스크립트 프론트엔드 개발자를 모집합니다.");
     }
 }
