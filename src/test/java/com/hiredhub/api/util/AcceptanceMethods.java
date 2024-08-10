@@ -20,4 +20,44 @@ public class AcceptanceMethods {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> getJobPosting(Long id) {
+        return RestAssured
+                .given()
+                .when()
+                .get("/jobPostings/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> listAllJobPostings(){
+        return RestAssured
+                .given()
+                .when()
+                .get("/jobPostings")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static void deleteJobPosting(Long id) {
+        RestAssured
+                .given()
+                .when()
+                .delete("/jobPostings/" + id)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> updateJobPosting(Long id, JobPostingRequest.UpdateRequest jobPostingUpdateRequest) {
+        return RestAssured
+                .given()
+                .body(jobPostingUpdateRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/jobPostings/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
 }

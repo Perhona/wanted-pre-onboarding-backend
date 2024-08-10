@@ -1,6 +1,7 @@
 package com.hiredhub.api.acceptance;
 
 import com.hiredhub.api.dto.JobPostingRequest;
+import com.hiredhub.api.util.AcceptanceMethods;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -8,10 +9,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static com.hiredhub.api.util.AcceptanceMethods.listAllJobPostings;
 import static com.hiredhub.api.util.AcceptanceMethods.makeJobPosting;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,24 +29,9 @@ public class JobPostingAcceptanceTest {
     @Test
     void createJobPosting() {
         JobPostingRequest.CreateRequest jobPostingCreateRequest = new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L);
+        long id = makeJobPosting(jobPostingCreateRequest).jsonPath().getLong("id");
 
-        ExtractableResponse<Response> response = RestAssured
-                .given()
-                .body(jobPostingCreateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/jobPostings")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
-        long id = response.jsonPath().getLong("id");
-
-        RestAssured
-                .given()
-                .when()
-                .get("/jobPostings/" + id)
-                .then()
-                .statusCode(HttpStatus.OK.value());
+        AcceptanceMethods.getJobPosting(id);
     }
 
     /**
@@ -59,13 +45,7 @@ public class JobPostingAcceptanceTest {
         Long jobPostingId1 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
         Long jobPostingId2 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L)).jsonPath().getLong("id");
 
-        ExtractableResponse<Response> response = RestAssured
-                .given()
-                .when()
-                .get("/jobPostings")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> response = listAllJobPostings();
         assertThat(response.jsonPath().getList("id", Long.class)).contains(jobPostingId1, jobPostingId2);
     }
 
@@ -80,13 +60,7 @@ public class JobPostingAcceptanceTest {
         Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
         makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
 
-        ExtractableResponse<Response> response = RestAssured
-                .given()
-                .when()
-                .get("/jobPostings/" + jobPostingId)
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceMethods.getJobPosting(jobPostingId);
 
         assertThat(response.jsonPath().getLong("id")).isEqualTo(jobPostingId);
         assertThat(response.jsonPath().getString("jobDescription")).isEqualTo("test");
@@ -103,15 +77,7 @@ public class JobPostingAcceptanceTest {
     void updateJobPosting() {
         Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
 
-        ExtractableResponse<Response> response = RestAssured
-                .given()
-                .body(new JobPostingRequest.UpdateRequest("프론트엔드 개발자", 10_000_000, "JavaScript", "자바 스크립트 프론트엔드 개발자를 모집합니다."))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/jobPostings/" + jobPostingId)
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceMethods.updateJobPosting(jobPostingId, new JobPostingRequest.UpdateRequest("프론트엔드 개발자", 10_000_000, "JavaScript", "자바 스크립트 프론트엔드 개발자를 모집합니다."));
 
         assertThat(response.jsonPath().getLong("id")).isEqualTo(jobPostingId);
         assertThat(response.jsonPath().getString("position")).isEqualTo("프론트엔드 개발자");
@@ -131,12 +97,7 @@ public class JobPostingAcceptanceTest {
         Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
         makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
 
-        RestAssured
-                .given()
-                .when()
-                .delete("/jobPostings/" + jobPostingId)
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+        AcceptanceMethods.deleteJobPosting(jobPostingId);
 
         RestAssured
                 .given()
@@ -145,14 +106,7 @@ public class JobPostingAcceptanceTest {
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
 
-        ExtractableResponse<Response> response = RestAssured
-                .given()
-                .when()
-                .get("/jobPostings")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
+        ExtractableResponse<Response> response = listAllJobPostings();
         assertThat(response.jsonPath().getList("id", Long.class)).hasSize(1);
     }
 }
