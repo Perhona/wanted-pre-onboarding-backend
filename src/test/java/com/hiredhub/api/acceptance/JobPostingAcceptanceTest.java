@@ -121,8 +121,8 @@ public class JobPostingAcceptanceTest {
         // Company 원티드 = new Company(1L, "원티드");
         // Company 원티드연구소 = new Company(2L, "원티드연구소);
 
-        Long jobPostingId1 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "java 백엔드 개발자를 모집합니다.", 1L)).jsonPath().getLong("id");
-        Long jobPostingId2 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "java", "java 백엔드 개발자를 모집합니다.", 2L)).jsonPath().getLong("id");
+        Long jobPostingId1 = makeJobPosting(new JobPostingRequest.CreateRequest("spring 백엔드 개발자", "한국", "서울", 10_000_000, "spring", "백엔드 개발자를 모집합니다.", 1L)).jsonPath().getLong("id");
+        Long jobPostingId2 = makeJobPosting(new JobPostingRequest.CreateRequest("spring 백엔드 개발자", "한국", "판교", 500_000, "java", "java 백엔드 개발자를 모집합니다.", 2L)).jsonPath().getLong("id");
         Long jobPostingId3 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "부산", 2_000_000, "python", "python 백엔드 개발자를 모집합니다.", 2L)).jsonPath().getLong("id");
 
         ExtractableResponse<Response> searchCompanyNameResponse = RestAssured
@@ -133,16 +133,16 @@ public class JobPostingAcceptanceTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        assertThat(searchCompanyNameResponse.jsonPath().getList("id")).containsOnly(jobPostingId2, jobPostingId3);
+        assertThat(searchCompanyNameResponse.jsonPath().getList("id", Long.class)).containsOnly(jobPostingId2, jobPostingId3);
 
         ExtractableResponse<Response> searchTechStackResponse = RestAssured
                 .given()
-                .param("techStack", "java")
+                .param("position", "spring")
                 .when()
                 .get("/jobPostings/search")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
-        assertThat(searchTechStackResponse.jsonPath().getList("id")).containsOnly(jobPostingId1, jobPostingId2);
+        assertThat(searchTechStackResponse.jsonPath().getList("id", Long.class)).containsOnly(jobPostingId1, jobPostingId2);
     }
 }
