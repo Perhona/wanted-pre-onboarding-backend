@@ -119,4 +119,28 @@ public class JobPostingAcceptanceTest {
         assertThat(response.jsonPath().getString("techStack")).isEqualTo("JavaScript");
         assertThat(response.jsonPath().getString("jobDescription")).isEqualTo("자바 스크립트 프론트엔드 개발자를 모집합니다.");
     }
+
+    /**
+     * given 채용 공고를 1개 등록하고
+     * when 채용 공고를 삭제하면
+     * then 삭제된 채용 공고를 조회할 수 없다.
+     */
+    @DisplayName("채용 공고 삭제")
+    @Test
+    void deleteJobPosting() {
+        Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        RestAssured
+                .given()
+                .when()
+                .delete("/jobPostings/" + jobPostingId)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        RestAssured
+                .given()
+                .when()
+                .get("/jobPostings/" + jobPostingId)
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 }
