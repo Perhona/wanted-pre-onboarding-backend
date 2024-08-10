@@ -27,11 +27,11 @@ public class JobPostingAcceptanceTest {
     @DisplayName("채용 공고 등록")
     @Test
     void createJobPosting() {
-        JobPostingRequest jobPostingRequest = new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L);
+        JobPostingRequest.CreateRequest jobPostingCreateRequest = new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L);
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
-                .body(jobPostingRequest)
+                .body(jobPostingCreateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/jobPostings")
@@ -56,8 +56,8 @@ public class JobPostingAcceptanceTest {
     @DisplayName("공고 목록 조회")
     @Test
     void listJobPostings() {
-        Long jobPostingId1 = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
-        Long jobPostingId2 = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L)).jsonPath().getLong("id");
+        Long jobPostingId1 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        Long jobPostingId2 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L)).jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
@@ -77,8 +77,8 @@ public class JobPostingAcceptanceTest {
     @DisplayName("채용 공고 상세 조회")
     @Test
     void getJobPosting() {
-        Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
-        makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
+        Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
@@ -101,7 +101,7 @@ public class JobPostingAcceptanceTest {
     @DisplayName("채용 공고 수정")
     @Test
     void updateJobPosting() {
-        Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
@@ -128,8 +128,8 @@ public class JobPostingAcceptanceTest {
     @DisplayName("채용 공고 삭제")
     @Test
     void deleteJobPosting() {
-        Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
-        makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
+        Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
 
         RestAssured
                 .given()

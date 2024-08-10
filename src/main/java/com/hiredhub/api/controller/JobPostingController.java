@@ -26,8 +26,8 @@ public class JobPostingController {
     }
 
     @PostMapping("/jobPostings")
-    public ResponseEntity<JobPostingResponse.DetailResponse> createJobPosting(@RequestBody JobPostingRequest jobPostingRequest) {
-        JobPostingResponse.DetailResponse jobPostingDetailResponse = jobPostingService.createJobPosting(jobPostingRequest);
+    public ResponseEntity<JobPostingResponse.DetailResponse> createJobPosting(@RequestBody JobPostingRequest.CreateRequest jobPostingCreateRequest) {
+        JobPostingResponse.DetailResponse jobPostingDetailResponse = jobPostingService.createJobPosting(jobPostingCreateRequest);
         return ResponseEntity.created(URI.create("/jobPostings/" + jobPostingDetailResponse.id())).body(jobPostingDetailResponse);
     }
 

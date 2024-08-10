@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class AcceptanceMethods {
-    public static ExtractableResponse<Response> makeJobPosting(JobPostingRequest jobPostingRequest) {
+    public static ExtractableResponse<Response> makeJobPosting(JobPostingRequest.CreateRequest jobPostingCreateRequest) {
         return RestAssured
                 .given()
-                .body(jobPostingRequest)
+                .body(jobPostingCreateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/jobPostings")
