@@ -1,5 +1,7 @@
 package com.hiredhub.api.model;
 
+import com.hiredhub.api.exception.CustomException;
+import com.hiredhub.api.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -51,4 +53,31 @@ public class JobPosting {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void updatePosition(String position) {
+        if (position == null || position.isEmpty()) {
+            throw new CustomException(ErrorCode.POSITION_CANNOT_BE_EMPTY);
+        }
+        this.position = position;
+    }
+
+    public void updateReward(Integer reward) {
+        if (reward == null || reward < 0) {
+            throw new CustomException(ErrorCode.INVALID_REWARD_AMOUNT);
+        }
+        this.reward = reward;
+    }
+
+    public void updateTechStack(String techStack) {
+        if (techStack == null || techStack.isEmpty()) {
+            throw new CustomException(ErrorCode.TECH_STACK_CANNOT_BE_EMPTY);
+        }
+        this.techStack = techStack;
+    }
+
+    public void updateJobDescription(String jobDescription) {
+        if (jobDescription == null || jobDescription.isEmpty()) {
+            throw new CustomException(ErrorCode.JOB_DESCRIPTION_CANNOT_BE_EMPTY);
+        }
+        this.jobDescription = jobDescription;
+    }
 }

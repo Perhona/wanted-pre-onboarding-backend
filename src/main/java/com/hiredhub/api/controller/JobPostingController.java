@@ -30,4 +30,9 @@ public class JobPostingController {
         JobPostingResponse.DetailResponse jobPostingDetailResponse = jobPostingService.createJobPosting(jobPostingRequest);
         return ResponseEntity.created(URI.create("/jobPostings/" + jobPostingDetailResponse.id())).body(jobPostingDetailResponse);
     }
+
+    @PutMapping("/jobPostings/{id}")
+    public ResponseEntity<JobPostingResponse.DetailResponse> updateJobPosting(@PathVariable Long id, @RequestBody JobPostingRequest.UpdateRequest jobPostingUpdateRequest) {
+        return ResponseEntity.ok().body(jobPostingService.updateJobPosting(id, jobPostingUpdateRequest));
+    }
 }
