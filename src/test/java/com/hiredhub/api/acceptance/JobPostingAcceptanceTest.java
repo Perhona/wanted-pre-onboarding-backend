@@ -105,7 +105,7 @@ public class JobPostingAcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured
                 .given()
-                .body(new JobPostingRequest.UpdateRequest(jobPostingId, "프론트엔드 개발자", 10_000_000, "JavaScript", "자바 스크립트 프론트엔드 개발자를 모집합니다."))
+                .body(new JobPostingRequest.UpdateRequest("프론트엔드 개발자", 10_000_000, "JavaScript", "자바 스크립트 프론트엔드 개발자를 모집합니다."))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/jobPostings/" + jobPostingId)

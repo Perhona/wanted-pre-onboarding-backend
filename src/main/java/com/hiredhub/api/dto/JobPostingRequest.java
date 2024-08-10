@@ -22,8 +22,7 @@ public class JobPostingRequest {
         this.companyId = companyId;
     }
 
-    public record UpdateRequest(Long id,
-                                String position,
+    public record UpdateRequest(String position,
                                 Integer reward,
                                 String techStack,
                                 String jobDescription) {
