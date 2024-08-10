@@ -2,6 +2,7 @@ package com.hiredhub.api.controller;
 
 import com.hiredhub.api.dto.JobPostingRequest;
 import com.hiredhub.api.dto.JobPostingResponse;
+import com.hiredhub.api.dto.JobPostingSearchRequest;
 import com.hiredhub.api.service.JobPostingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,11 @@ public class JobPostingController {
     public ResponseEntity<Void> deleteJobPosting(@PathVariable Long id) {
         jobPostingService.deleteJobPosting(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/jobPostings/search")
+    public ResponseEntity<List<JobPostingResponse.ListResponse>> searchJobPostings(@ModelAttribute JobPostingSearchRequest jobPostingSearchRequest) {
+        System.out.println(jobPostingSearchRequest.toString());
+        return ResponseEntity.ok().body(jobPostingService.searchJobPostings(jobPostingSearchRequest));
     }
 }
