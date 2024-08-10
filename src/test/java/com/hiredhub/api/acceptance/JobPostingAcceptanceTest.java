@@ -129,12 +129,14 @@ public class JobPostingAcceptanceTest {
     @Test
     void deleteJobPosting() {
         Long jobPostingId = makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        makeJobPosting(new JobPostingRequest("백엔드 개발자", "한국", "판교", 500_000, "python", "test", 1L));
+
         RestAssured
                 .given()
                 .when()
                 .delete("/jobPostings/" + jobPostingId)
                 .then()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         RestAssured
                 .given()
@@ -142,5 +144,15 @@ public class JobPostingAcceptanceTest {
                 .get("/jobPostings/" + jobPostingId)
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .when()
+                .get("/jobPostings")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        assertThat(response.jsonPath().getList("id", Long.class)).hasSize(1);
     }
 }
