@@ -24,31 +24,29 @@ public class JobPostingService {
     private final CompanyRepository companyRepository;
     private final JobPostingRepository jobPostingRepository;
 
-    private JobPostingResponse.DetailResponse createJobPostingDetailResponse(JobPosting jobPosting) {
+    private JobPostingResponse.DetailResponse makeJobPostingDetailResponse(JobPosting jobPosting) {
         return new JobPostingResponse.DetailResponse(jobPosting.getId(), jobPosting.getCompany().getName(), jobPosting.getPosition(), jobPosting.getCountry(), jobPosting.getRegion(), jobPosting.getReward(), jobPosting.getTechStack(), jobPosting.getJobDescription(), jobPosting.getCompany().getOtherJobPostingIds(jobPosting.getId()));
     }
 
-    private List<JobPostingResponse.ListResponse> createJobPostingListResponse(List<JobPosting> jobPostings) {
+    private List<JobPostingResponse.ListResponse> makeJobPostingListResponse(List<JobPosting> jobPostings) {
         return jobPostings.stream().map(jobPosting -> new JobPostingResponse.ListResponse(jobPosting.getId(), jobPosting.getCompany().getName(), jobPosting.getPosition(), jobPosting.getCountry(), jobPosting.getRegion(), jobPosting.getReward(), jobPosting.getTechStack())).collect(Collectors.toList());
     }
 
     @Transactional
     public JobPostingResponse.DetailResponse createJobPosting(JobPostingRequest.CreateRequest jobPostingCreateRequest) {
         Company company = companyRepository.findById(jobPostingCreateRequest.companyId()).orElseThrow(() -> new CustomException(ErrorCode.COMPANY_NOT_FOUND));
-        JobPosting jobPosting = new JobPosting(jobPostingCreateRequest.position(), jobPostingCreateRequest.country(), jobPostingCreateRequest.region(), jobPostingCreateRequest.reward(), jobPostingCreateRequest.techStack(), jobPostingCreateRequest.jobDescription(), company);
 
-        jobPostingRepository.save(jobPosting);
-        return createJobPostingDetailResponse(jobPosting);
+        return makeJobPostingDetailResponse(jobPostingRepository.save(new JobPosting(jobPostingCreateRequest.position(), jobPostingCreateRequest.country(), jobPostingCreateRequest.region(), jobPostingCreateRequest.reward(), jobPostingCreateRequest.techStack(), jobPostingCreateRequest.jobDescription(), company)));
     }
 
     @Transactional(readOnly = true)
     public List<JobPostingResponse.ListResponse> listAllJobPostings() {
-        return createJobPostingListResponse(jobPostingRepository.findAll());
+        return makeJobPostingListResponse(jobPostingRepository.findAll());
     }
 
     @Transactional(readOnly = true)
     public JobPostingResponse.DetailResponse getJobPosting(Long id) {
-        return createJobPostingDetailResponse(jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND)));
+        return makeJobPostingDetailResponse(jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND)));
     }
 
     @Transactional
@@ -60,26 +58,25 @@ public class JobPostingService {
         jobPosting.updateTechStack(jobPostingUpdateRequest.techStack());
         jobPosting.updateJobDescription(jobPostingUpdateRequest.jobDescription());
 
-        return createJobPostingDetailResponse(jobPosting);
+        return makeJobPostingDetailResponse(jobPosting);
     }
 
     @Transactional
     public void deleteJobPosting(Long id) {
-        JobPosting jobPosting = jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND));
-        jobPostingRepository.delete(jobPosting);
+        jobPostingRepository.delete(jobPostingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.JOB_POSTING_NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
     public List<JobPostingResponse.ListResponse> searchJobPostings(JobPostingSearchRequest jobPostingSearchRequest) {
         if (jobPostingSearchRequest.hasAllParams()) {
-            return createJobPostingListResponse(jobPostingRepository.findJobPostingsByCompanyNameContainingIgnoreCaseAndPositionContainingIgnoreCase(jobPostingSearchRequest.companyName(), jobPostingSearchRequest.position()));
+            return makeJobPostingListResponse(jobPostingRepository.findJobPostingsByCompanyNameContainingIgnoreCaseAndPositionContainingIgnoreCase(jobPostingSearchRequest.companyName(), jobPostingSearchRequest.position()));
         }
         if (jobPostingSearchRequest.hasCompanyName()) {
-            return createJobPostingListResponse(jobPostingRepository.findJobPostingsByCompanyNameContainingIgnoreCase(jobPostingSearchRequest.companyName()));
+            return makeJobPostingListResponse(jobPostingRepository.findJobPostingsByCompanyNameContainingIgnoreCase(jobPostingSearchRequest.companyName()));
         }
         if (jobPostingSearchRequest.hasPosition()) {
-            return createJobPostingListResponse(jobPostingRepository.findJobPostingsByPositionContainingIgnoreCase(jobPostingSearchRequest.position()));
+            return makeJobPostingListResponse(jobPostingRepository.findJobPostingsByPositionContainingIgnoreCase(jobPostingSearchRequest.position()));
         }
-        return createJobPostingListResponse(jobPostingRepository.findAll());
+        return makeJobPostingListResponse(jobPostingRepository.findAll());
     }
 }
