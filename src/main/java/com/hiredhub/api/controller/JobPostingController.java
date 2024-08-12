@@ -45,7 +45,6 @@ public class JobPostingController {
 
     @GetMapping("/jobPostings/search")
     public ResponseEntity<List<JobPostingResponse.ListResponse>> searchJobPostings(@ModelAttribute JobPostingSearchRequest jobPostingSearchRequest) {
-        System.out.println(jobPostingSearchRequest.toString());
         return ResponseEntity.ok().body(jobPostingService.searchJobPostings(jobPostingSearchRequest));
     }
 }
