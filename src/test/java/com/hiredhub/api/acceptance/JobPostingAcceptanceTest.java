@@ -1,5 +1,6 @@
 package com.hiredhub.api.acceptance;
 
+import com.hiredhub.api.dto.ApplicationRequest;
 import com.hiredhub.api.dto.JobPostingRequest;
 import com.hiredhub.api.model.User;
 import com.hiredhub.api.util.AcceptanceMethods;
@@ -15,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import static com.hiredhub.api.util.AcceptanceMethods.listAllJobPostings;
 import static com.hiredhub.api.util.AcceptanceMethods.makeJobPosting;
@@ -165,9 +165,9 @@ public class JobPostingAcceptanceTest {
         ExtractableResponse<Response> response = RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(Map.of("userId", user.getId()))
+                .body(new ApplicationRequest(user.getId(), jobPostingId))
                 .when()
-                .post("/jobPostings/" + jobPostingId + "/applications")
+                .post("/applications")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
