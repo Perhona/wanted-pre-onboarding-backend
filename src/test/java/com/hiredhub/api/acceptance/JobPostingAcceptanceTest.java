@@ -1,6 +1,7 @@
 package com.hiredhub.api.acceptance;
 
 import com.hiredhub.api.dto.JobPostingRequest;
+import com.hiredhub.api.dto.JobPostingSearchRequest;
 import com.hiredhub.api.util.AcceptanceMethods;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -31,7 +32,8 @@ public class JobPostingAcceptanceTest {
         JobPostingRequest.CreateRequest jobPostingCreateRequest = new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L);
         long id = makeJobPosting(jobPostingCreateRequest).jsonPath().getLong("id");
 
-        AcceptanceMethods.getJobPosting(id);
+        ExtractableResponse<Response> response = listAllJobPostings();
+        assertThat(response.jsonPath().getList("id", Long.class)).contains(id);
     }
 
     /**
@@ -125,24 +127,10 @@ public class JobPostingAcceptanceTest {
         Long jobPostingId2 = makeJobPosting(new JobPostingRequest.CreateRequest("spring 백엔드 개발자", "한국", "판교", 500_000, "java", "java 백엔드 개발자를 모집합니다.", 2L)).jsonPath().getLong("id");
         Long jobPostingId3 = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "부산", 2_000_000, "python", "python 백엔드 개발자를 모집합니다.", 2L)).jsonPath().getLong("id");
 
-        ExtractableResponse<Response> searchCompanyNameResponse = RestAssured
-                .given()
-                .param("companyName", "연구소")
-                .when()
-                .get("/jobPostings/search")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> searchCompanyNameResponse = AcceptanceMethods.searchJobPostings(new JobPostingSearchRequest("연구소", null));
         assertThat(searchCompanyNameResponse.jsonPath().getList("id", Long.class)).containsOnly(jobPostingId2, jobPostingId3);
 
-        ExtractableResponse<Response> searchTechStackResponse = RestAssured
-                .given()
-                .param("position", "spring")
-                .when()
-                .get("/jobPostings/search")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> searchTechStackResponse = AcceptanceMethods.searchJobPostings(new JobPostingSearchRequest(null, "spring"));
         assertThat(searchTechStackResponse.jsonPath().getList("id", Long.class)).containsOnly(jobPostingId1, jobPostingId2);
     }
 }

@@ -1,11 +1,15 @@
 package com.hiredhub.api.util;
 
 import com.hiredhub.api.dto.JobPostingRequest;
+import com.hiredhub.api.dto.JobPostingSearchRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AcceptanceMethods {
     public static ExtractableResponse<Response> makeJobPosting(JobPostingRequest.CreateRequest jobPostingCreateRequest) {
@@ -30,7 +34,7 @@ public class AcceptanceMethods {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> listAllJobPostings(){
+    public static ExtractableResponse<Response> listAllJobPostings() {
         return RestAssured
                 .given()
                 .when()
@@ -56,6 +60,21 @@ public class AcceptanceMethods {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/jobPostings/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> searchJobPostings(JobPostingSearchRequest jobPostingSearchRequest) {
+        Map<String, String> params = new HashMap<>();
+        params.put("position", jobPostingSearchRequest.position());
+        params.put("companyName", jobPostingSearchRequest.companyName());
+
+        return RestAssured
+                .given()
+                .params(params)
+                .when()
+                .get("/jobPostings/search")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
