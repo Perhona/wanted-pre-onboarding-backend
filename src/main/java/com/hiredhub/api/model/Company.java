@@ -30,10 +30,6 @@ public class Company {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void addJobPosting(JobPosting jobPosting) {
-        jobPostings.add(jobPosting);
-    }
-
     public List<Long> getOtherJobPostingIds(Long jobPostingId) {
         return jobPostings.stream().map(JobPosting::getId).filter(id -> !id.equals(jobPostingId)).toList();
     }
