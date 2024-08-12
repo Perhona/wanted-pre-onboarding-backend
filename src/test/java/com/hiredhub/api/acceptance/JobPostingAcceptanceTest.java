@@ -1,6 +1,7 @@
 package com.hiredhub.api.acceptance;
 
 import com.hiredhub.api.dto.JobPostingRequest;
+import com.hiredhub.api.model.User;
 import com.hiredhub.api.util.AcceptanceMethods;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -9,8 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 import static com.hiredhub.api.util.AcceptanceMethods.listAllJobPostings;
 import static com.hiredhub.api.util.AcceptanceMethods.makeJobPosting;
@@ -144,5 +149,30 @@ public class JobPostingAcceptanceTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
         assertThat(searchTechStackResponse.jsonPath().getList("id", Long.class)).containsOnly(jobPostingId1, jobPostingId2);
+    }
+
+    /**
+     * given 채용 공고 1개를 등록하고
+     * when 지원자가 채용 공고에 지원하면
+     * then 지원 내역에서 확인할 수 있다.
+     */
+    @DisplayName("채용 공고 지원")
+    @Test
+    void createJobApplication() {
+        Long jobPostingId = makeJobPosting(new JobPostingRequest.CreateRequest("백엔드 개발자", "한국", "서울", 10_000_000, "java", "test", 1L)).jsonPath().getLong("id");
+        User user = new User(1L, "김철수", new ArrayList<>());
+
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(Map.of("userId", user.getId()))
+                .when()
+                .post("/jobPostings/" + jobPostingId + "/applications")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+
+        assertThat(response.jsonPath().getLong("userId")).isEqualTo(user.getId());
+        assertThat(response.jsonPath().getLong("jobPostingId")).isEqualTo(jobPostingId);
     }
 }
