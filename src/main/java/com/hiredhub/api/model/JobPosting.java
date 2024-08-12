@@ -13,24 +13,32 @@ public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Getter
     private String position;
+
     @Getter
     private String country;
+
     @Getter
     private String region;
+
     @Getter
     private Integer reward;
+
     @Getter
     @Column(name = "tech_stack")
     private String techStack;
+
     @Getter
     @Column(name = "job_description")
     private String jobDescription;
+
     @Getter
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
